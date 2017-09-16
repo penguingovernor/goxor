@@ -37,7 +37,7 @@ func init() {
 }
 
 func helpMsg() string {
-	return "Try 'name --help' for more information"
+	return "Try 'goxor --help' for more information"
 }
 
 func verifyFlags() {
