@@ -73,11 +73,11 @@ func getFileBytes(fileName string) []byte {
 
 }
 
-func writeEncryptedData(data []byte) {
+func writeEncryptedData(in, out string, data []byte) {
 	fileName := outputFile
 
-	if outputFile == "" {
-		fileName = inputFile + ".gxef"
+	if out == "" {
+		fileName = in + ".gxef"
 	}
 
 	err := ioutil.WriteFile(fileName, data, 0666)
@@ -87,11 +87,11 @@ func writeEncryptedData(data []byte) {
 	}
 }
 
-func writeKey(key []byte) {
-	fileName := outputFile + ".key"
+func writeKey(in, out string, key []byte) {
+	fileName := out + ".key"
 
-	if outputFile == "" {
-		fileName = inputFile + ".gxef.key"
+	if out == "" {
+		fileName = in + ".gxef.key"
 	}
 	err := ioutil.WriteFile(fileName, key, 0666)
 
@@ -101,26 +101,26 @@ func writeKey(key []byte) {
 
 }
 
-func writeDecryptedData(data []byte) {
-	if outputFile == "" {
+func writeDecryptedData(out string, data []byte) {
+	if out == "" {
 		fmt.Print(string(data))
 		return
 	}
 
-	err := ioutil.WriteFile(outputFile, data, 0666)
+	err := ioutil.WriteFile(out, data, 0666)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func removeEvidence() {
+func removeEvidence(in string) {
 	fmt.Println("Cleaning up files...")
-	err := os.Remove(inputFile)
+	err := os.Remove(in)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = os.Remove(inputFile + ".key")
+	err = os.Remove(in + ".key")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -130,12 +130,12 @@ func removeEvidence() {
 
 // Encryption Code
 
-func encrytFile() {
-	fileBytes := getFileBytes(inputFile)
+func encrytFile(in, out string) {
+	fileBytes := getFileBytes(in)
 	fileKey := generateFileKey(len(fileBytes))
 	encrytedBytes := encrypt(fileBytes, fileKey)
-	writeEncryptedData(encrytedBytes)
-	writeKey(fileKey)
+	writeEncryptedData(in, out, encrytedBytes)
+	writeKey(in, out, fileKey)
 }
 
 func generateFileKey(n int) []byte {
@@ -162,13 +162,13 @@ func encrypt(bytes, key []byte) []byte {
 
 // Decryption Code
 
-func decryptFile() {
-	encryptedBytes := getFileBytes(inputFile)
-	fileKey := getFileBytes(inputFile + ".key")
+func decryptFile(in, out string) {
+	encryptedBytes := getFileBytes(in)
+	fileKey := getFileBytes(in + ".key")
 	decryptedData := decrypt(encryptedBytes, fileKey)
-	writeDecryptedData(decryptedData)
+	writeDecryptedData(out, decryptedData)
 	if cleanFlag {
-		removeEvidence()
+		removeEvidence(in)
 	}
 }
 
@@ -182,8 +182,8 @@ func main() {
 	verifyFlags()
 
 	if !decryptFlag {
-		encrytFile()
+		encrytFile(inputFile, outputFile)
 	} else {
-		decryptFile()
+		decryptFile(inputFile, outputFile)
 	}
 }
