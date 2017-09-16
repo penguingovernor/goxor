@@ -74,11 +74,10 @@ func getFileBytes(fileName string) []byte {
 }
 
 func writeEncryptedData(data []byte) {
-	var fileName string
+	fileName := outputFile
+
 	if outputFile == "" {
 		fileName = inputFile + ".gxef"
-	} else {
-		fileName = outputFile
 	}
 
 	err := ioutil.WriteFile(fileName, data, 0666)
@@ -89,11 +88,10 @@ func writeEncryptedData(data []byte) {
 }
 
 func writeKey(key []byte) {
-	var fileName string
+	fileName := outputFile + ".key"
+
 	if outputFile == "" {
 		fileName = inputFile + ".gxef.key"
-	} else {
-		fileName = outputFile + ".key"
 	}
 	err := ioutil.WriteFile(fileName, key, 0666)
 
