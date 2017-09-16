@@ -80,7 +80,12 @@ func writeEncryptedData(data []byte) {
 	} else {
 		fileName = outputFile
 	}
-	ioutil.WriteFile(fileName, data, 0666)
+
+	err := ioutil.WriteFile(fileName, data, 0666)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func writeKey(key []byte) {
@@ -90,7 +95,12 @@ func writeKey(key []byte) {
 	} else {
 		fileName = outputFile + ".key"
 	}
-	ioutil.WriteFile(fileName, key, 0666)
+	err := ioutil.WriteFile(fileName, key, 0666)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
 
 func writeDecryptedData(data []byte) {
@@ -98,7 +108,12 @@ func writeDecryptedData(data []byte) {
 		fmt.Print(string(data))
 		return
 	}
-	ioutil.WriteFile(outputFile, data, 0666)
+
+	err := ioutil.WriteFile(outputFile, data, 0666)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func removeEvidence() {
@@ -127,7 +142,10 @@ func encrytFile() {
 
 func generateFileKey(n int) []byte {
 	fileKey := make([]byte, n)
-	rand.Read(fileKey)
+	_, err := rand.Read(fileKey)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return fileKey
 }
 
