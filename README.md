@@ -11,7 +11,7 @@ go get github.com/penguingovernor/goxor
 ### Testing 
 To ensure that installation went smoothly run the `go test` tool 
 ```shell
-go test github.com/penguingovernor/goxor
+go test -v github.com/penguingovernor/goxor
 ```
 ### Documentation 
 After installing, you can use `go doc` to get documenation:
