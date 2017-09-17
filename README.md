@@ -19,7 +19,7 @@ After installing, you can use `go doc` to get documenation:
 go doc github.com/penguingovernor/goxor
 ```
 
-### Running goxorcrypt 
+### Running goxor
 `goxor` can be run in two modes of operation: encrypt and decrypt mode.
 
 Example:
