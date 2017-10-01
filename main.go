@@ -5,7 +5,7 @@
 // Encryption Specifics:
 // Unless specified otherwise, encrypting a file yields a file with a go xor encrypted file extension (.gxef)
 // and a key (.gxef.key) with the original file name preceding the extension.
-// It is crucial the the key file is not renamed as `goxor` will look for this file in decryption.
+// It is crucial that the key file is not renamed as `goxor` will look for this file in decryption.
 //
 // Without the key file the encrypted data is utterly useless, unless of coure you're a cryptanalyst.
 package main
