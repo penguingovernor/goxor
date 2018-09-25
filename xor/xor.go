@@ -11,6 +11,26 @@ import (
 	"github.com/penguingovernor/goxor/protocol"
 )
 
+// LoadKey loads the key from the given byte slice
+func LoadKey(data []byte) (*protocol.Key, error) {
+	key := &protocol.Key{}
+	err := proto.Unmarshal(data, key)
+	if err != nil {
+		return nil, err
+	}
+	return key, nil
+}
+
+// LoadData loads the data from the given byte slice
+func LoadData(slice []byte) (*protocol.Data, error) {
+	data := &protocol.Data{}
+	err := proto.Unmarshal(slice, data)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 // GenerateKey generates a properly formatted key
 // that contains the provided signature and key.
 func GenerateKey(key, signature []byte) *protocol.Key {

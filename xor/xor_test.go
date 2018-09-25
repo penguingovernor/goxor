@@ -328,3 +328,76 @@ func TestWriteData(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadKey(t *testing.T) {
+	testKey := GenerateKey([]byte("a"), []byte("b"))
+	slice, err := proto.Marshal(testKey)
+	if err != nil {
+		t.Error(err)
+	}
+
+	type args struct {
+		data []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *protocol.Key
+		wantErr bool
+	}{
+		{
+			name:    "Valid load",
+			args:    args{slice},
+			want:    testKey,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := LoadKey(tt.args.data)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("LoadKey() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !validate(got.PayLoad, tt.want.PayLoad) || !validate(got.Signature, tt.want.Signature) {
+				t.Errorf("LoadKey() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLoadData(t *testing.T) {
+	testData := GenerateData([]byte("a"), []byte("b"))
+	slice, err := proto.Marshal(testData)
+	if err != nil {
+		t.Error(err)
+	}
+	type args struct {
+		slice []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *protocol.Data
+		wantErr bool
+	}{
+		{
+			name:    "Valid load",
+			args:    args{slice},
+			want:    testData,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := LoadData(tt.args.slice)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("LoadData() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !validate(got.PayLoad, tt.want.PayLoad) || !validate(got.Signature, tt.want.Signature) {
+				t.Errorf("LoadData() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
