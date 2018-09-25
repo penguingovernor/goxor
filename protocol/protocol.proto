@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package protocol;
+
+message Key {
+	bytes Signature = 1;
+	bytes PayLoad = 2;
+}
+
+message Data {
+	bytes Signature = 1;
+	bytes PayLoad =2;
+}
