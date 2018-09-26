@@ -1,4 +1,4 @@
-// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2018 JORGE HENRIQUEZ <JOAHENRI@UCSC.EDU>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,14 +33,19 @@ import (
 // encryptCmd represents the encrypt command
 var encryptCmd = &cobra.Command{
 	Use:   "encrypt",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Encrypt encrypts data using a key and a signature with a xor cipher",
+	Long: `Examples:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+# Encrypts input hello using a one time pad as the key, 'goxor' as the signature, outputs out.xor and out.xor.key
+goxor encrypt -i hello
+
+# Encrypts input hello using a one time pad as the key, 'goxor' as the signature, outputs data.xor and key.xor.key
+goxor encrypt -i hello -o data -K key
+
+# Encrypts input hello using key 'test' and signature 'sig', outputs out.xor and out.xor.key
+goxor encrypt -i hello -k test -s sig`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Grab the flags we defined earlier
 		inFlag, err := cmd.Flags().GetString("input")
 		if err != nil {
 			log.Println(err)
@@ -61,6 +66,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			log.Println(err)
 		}
+		// Encrypt the files
 		encrypt(inFlag, keyFlag, sigFlag, outputFlag, keyOutFlag)
 	},
 }
@@ -110,17 +116,22 @@ if the input is "stdin", then stdin will be used as the signautre`
 
 func encrypt(inputFlag, keyFlag, signatureFlag, outputFlag, outputKeyFlag string) {
 
+	// Get the bytes from user input
 	inputBytes := getInput(inputFlag)
 	keyBytes := getKey(keyFlag, len(inputBytes))
 	signatureBytes := getSignature(signatureFlag)
 
+	// Generate the appropriate data
 	data := xor.GenerateData(inputBytes, signatureBytes)
 	key := xor.GenerateKey(keyBytes, signatureBytes)
+
+	// Encrypt the data
 	eData, err := xor.Encrypt(data, key)
 	if err != nil {
 		log.Fatalf("error while encryptng file: %v", err)
 	}
 
+	// Say we're done and output the files
 	fmt.Println("Done encrypting file")
 	writeData(eData, outputFlag)
 	writeKey(key, outputKeyFlag)
@@ -131,7 +142,9 @@ func writeData(data *protocol.Data, dest string) {
 	outname := dest
 
 	if strings.ToLower(dest) == "stdout" {
+		fmt.Println("---BEGIN ENCRYPTED DATA---")
 		xor.WriteData(os.Stdout, data)
+		fmt.Println("---END ENCRYPTED DATA---")
 		return
 	}
 
@@ -159,7 +172,10 @@ func writeKey(data *protocol.Key, dest string) {
 	outname := dest
 
 	if strings.ToLower(dest) == "stdout" {
+		fmt.Println("---BEGIN KEY DATA---")
 		xor.WriteKey(os.Stdout, data)
+		fmt.Println("---END KEY DATA---")
+		return
 	}
 
 	if dest == "" {

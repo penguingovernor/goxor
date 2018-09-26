@@ -1,4 +1,4 @@
-// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2018 JORGE HENRIQUEZ <JOAHENRI@UCSC.EDU>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -29,13 +30,14 @@ import (
 // decryptCmd represents the decrypt command
 var decryptCmd = &cobra.Command{
 	Use:   "decrypt",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Decrypt decrypts data. The inputs should come from goxor encrypt",
+	Long: `Examples:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+# Decrypts input out.xor using out.xor.key as the key, this will output to stdout
+$ goxor decrypt -i out.xor -k out.xor.key
+
+# Decrypts inpuyt out.xor using out.xor.key as the key, this will output to test.xor
+$ goxor decrypt -i out.xor -k out.xor.key -o test`,
 	Run: func(cmd *cobra.Command, args []string) {
 		intputFlag, err := cmd.Flags().GetString("input")
 		if err != nil {
@@ -62,15 +64,18 @@ func decrypt(in, key, out string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Done decrypting file")
 	dWriteOutput(data, out)
 }
 
 func dWriteOutput(data *protocol.Data, out string) {
 
 	if out == "" {
+		fmt.Println("---BEGIN DECRYPTED DATA---")
 		if _, err := os.Stdout.Write(data.PayLoad); err != nil {
 			log.Fatalf("could not write data: %v", err)
 		}
+		fmt.Println("---END DECRYPTED DATA---")
 		return
 	}
 
@@ -86,6 +91,8 @@ func dWriteOutput(data *protocol.Data, out string) {
 	if err := file.Close(); err != nil {
 		log.Fatalf("Could not close file %s.xor: %v", out, err)
 	}
+
+	fmt.Println("Data written to:", out, ".xor")
 
 }
 
@@ -104,6 +111,8 @@ func dGetInput(in string) *protocol.Data {
 		log.Fatalf("could not load file %s: %v\n", in, err)
 	}
 
+	fmt.Println("Using file:", in, "as input")
+
 	return data
 }
 
@@ -121,6 +130,8 @@ func dGetKey(in string) *protocol.Key {
 	if err != nil {
 		log.Fatalf("could not load file %s: %v", in, err)
 	}
+
+	fmt.Println("Using file:", in, "as key")
 
 	return data
 }
