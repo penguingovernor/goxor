@@ -68,6 +68,15 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(encryptCmd)
 
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// encryptCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// encryptCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	const (
 		inputMsg string = `the file to encrypt
 if the file cannot be found, then the input is treated as a string and that is encrypted
@@ -91,16 +100,6 @@ if the file cannot be found, then the input is treated as a string and that is u
 if the flag is ommited, then "goxor" will be used as the signature
 if the input is "stdin", then stdin will be used as the signautre`
 	)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// encryptCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// encryptCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	encryptCmd.Flags().StringP("input", "i", "", inputMsg)
 	encryptCmd.Flags().StringP("key", "k", "", keyMsg)
 	encryptCmd.Flags().StringP("output", "o", "", outMsg)
