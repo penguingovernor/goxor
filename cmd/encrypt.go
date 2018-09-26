@@ -36,13 +36,13 @@ var encryptCmd = &cobra.Command{
 	Short: "Encrypt encrypts data using a key and a signature with a xor cipher",
 	Long: `Examples:
 
-# Encrypts input hello using a one time pad as the key, 'goxor' as the signature, outputs out.xor and out.xor.key
-goxor encrypt -i hello
+# Encrypts input hello.txt using a one time pad as the key, 'goxor' as the signature, outputs out.xor and out.xor.key
+goxor encrypt -i hello.txt
 
-# Encrypts input hello using a one time pad as the key, 'goxor' as the signature, outputs data.xor and key.xor.key
-goxor encrypt -i hello -o data -K key
+# Encrypts input hello.txt using a one time pad as the key, 'goxor' as the signature, outputs data.xor and key.xor.key
+goxor encrypt -i hello.txt -o data -K key
 
-# Encrypts input hello using key 'test' and signature 'sig', outputs out.xor and out.xor.key
+# Encrypts input hello.txt using key 'test' and signature 'sig', outputs out.xor and out.xor.key
 goxor encrypt -i hello -k test -s sig`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Grab the flags we defined earlier

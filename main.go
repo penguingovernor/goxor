@@ -1,3 +1,13 @@
+// GoXor is a command line tool that encrypts and decrypts data.
+//
+// For usagae run `goxor --help`
+//
+// Encryption Specifics:
+// Unless specified otherwise, encrypting a file yields a file with a xor file extension (.xor)
+// and a key (.xor.key) with the word out preceding the extension.
+//
+// Without the key file the encrypted data is utterly useless, unless of coure you're a cryptanalyst.
+
 // Copyright © 2018 JORGE HENRIQUEZ <JOAHENRI@UCSC.EDU>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
