@@ -86,24 +86,24 @@ func init() {
 	const (
 		inputMsg string = `the file to encrypt
 if the file cannot be found, then the input is treated as a string and that is encrypted
-if the flag is ommited, then stdin will be used as the source for encryption`
+if the flag is omitted, then stdin will be used as the source for encryption`
 
 		outMsg string = `the file to output the encrypted data to
-if ommitted, then the file will be out.xor
+if omitted, then the file will be out.xor
 if the input is "stdout", then the data will be placed to stdout`
 
 		outKeyMsg string = `the file to output the encrypted data to
-if ommitted, then the file will be out.xor.key
+if omitted, then the file will be out.xor.key
 if the input is "stdout", then the data will be placed to stdout`
 
 		keyMsg string = `the file to use as the key to the enryption process
 if the file cannot be found, then the input is treated as a string and that is used as the key
-if the flag is ommited, then a one time pad will be used as the key
+if the flag is omitted, then a one time pad will be used as the key
 if the input is "stdin", then stdin will be used as the key`
 
 		sigMsg string = `the file to use as the signature to the enryption process
 if the file cannot be found, then the input is treated as a string and that is used as the signature
-if the flag is ommited, then "goxor" will be used as the signature
+if the flag is omitted, then "goxor" will be used as the signature
 if the input is "stdin", then stdin will be used as the signautre`
 	)
 	encryptCmd.Flags().StringP("input", "i", "", inputMsg)
@@ -200,7 +200,7 @@ func writeKey(data *protocol.Key, dest string) {
 }
 
 func getInput(input string) []byte {
-	// If ommitted
+	// If omitted
 	if input == "" {
 		fmt.Println("Reading from stdin for input, press ctrl-d to stop")
 		stdinBytes, err := ioutil.ReadAll(os.Stdin)
@@ -223,7 +223,7 @@ func getInput(input string) []byte {
 
 func getKey(input string, length int) []byte {
 
-	// If ommitted, use otp
+	// If omitted, use otp
 	if input == "" {
 		fmt.Println("Using one time pad as key")
 		// Seed random
@@ -262,7 +262,7 @@ func getKey(input string, length int) []byte {
 }
 
 func getSignature(input string) []byte {
-	// If ommitted, use goxor
+	// If omitted, use goxor
 	if input == "" {
 		fmt.Println("Using \"goxor\" as signature")
 		return []byte("goxor")

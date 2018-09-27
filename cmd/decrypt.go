@@ -152,7 +152,7 @@ func init() {
 		inputMsg string = `the file to decrypt`
 		keyMsg   string = `the file to use as the key to the decryption process`
 		outMsg   string = `the file to output the decrypted data to
-if ommitted, then the file will be out.xor
+if omitted, then the file will be out.xor
 if the input is "stdout", then the data will be placed to stdout`
 	)
 	decryptCmd.Flags().StringP("input", "i", "", inputMsg)

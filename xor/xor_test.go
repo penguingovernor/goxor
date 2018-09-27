@@ -199,7 +199,7 @@ func Test_validate(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "Smae length slices, same content",
+			name: "Same length slices, same content",
 			args: args{[]byte("four"), []byte("four")},
 			want: true,
 		},
