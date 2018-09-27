@@ -1,4 +1,6 @@
-# goxor ![alt text](https://goreportcard.com/badge/github.com/penguingovernor/goxor "Go Report Card")
+# goxor #
+[![Go Report Card](https://goreportcard.com/badge/github.com/PenguinGovernor/goxor)](https://goreportcard.com/report/github.com/PenguinGovernor/goxor)
+
 GoXor is an encryption method written in the [Go programming language](https://golang.org/), and is based on a [xor cipher](https://en.wikipedia.org/wiki/XOR_cipher) in conjunction with a [one-time pad](https://en.wikipedia.org/wiki/One-time_pad). 
 
 ### Download and Install 
