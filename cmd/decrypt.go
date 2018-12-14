@@ -15,15 +15,9 @@
 package cmd
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
 
-	"github.com/penguingovernor/goxor/xor"
-
-	"github.com/penguingovernor/goxor/protocol"
-
+	"github.com/penguingovernor/goxor/internal/cmdutil"
 	"github.com/spf13/cobra"
 )
 
@@ -52,88 +46,11 @@ $ goxor decrypt -i out.xor -k out.xor.key -o test`,
 			log.Println(err)
 		}
 
-		decrypt(intputFlag, keyFlag, outFlag)
+		if err := cmdutil.Decrypt(intputFlag, keyFlag, outFlag); err != nil {
+			log.Fatalf("decryption err: %v\n", err)
+		}
 
 	},
-}
-
-func decrypt(in, key, out string) {
-	input := dGetInput(in)
-	keyData := dGetKey(key)
-	data, err := xor.Decrypt(input, keyData)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Done decrypting file")
-	dWriteOutput(data, out)
-}
-
-func dWriteOutput(data *protocol.Data, out string) {
-
-	if out == "" {
-		fmt.Println("---BEGIN DECRYPTED DATA---")
-		if _, err := os.Stdout.Write(data.PayLoad); err != nil {
-			log.Fatalf("could not write data: %v", err)
-		}
-		fmt.Println("---END DECRYPTED DATA---")
-		return
-	}
-
-	file, err := os.Create(out + ".xor")
-	if err != nil {
-		log.Fatalf("Could not create file %s.xor: %v", out, err)
-	}
-
-	if _, err := file.Write(data.PayLoad); err != nil {
-		log.Fatalf("could not write to file %s.xor: %v", out, err)
-	}
-
-	if err := file.Close(); err != nil {
-		log.Fatalf("Could not close file %s.xor: %v", out, err)
-	}
-
-	fmt.Println("Data written to:", out, ".xor")
-
-}
-
-func dGetInput(in string) *protocol.Data {
-	if in == "" {
-		log.Fatal("flag input is required")
-	}
-
-	fileBytes, err := ioutil.ReadFile(in)
-	if err != nil {
-		log.Fatalf("could not read %s: %v\n", in, err)
-	}
-
-	data, err := xor.LoadData(fileBytes)
-	if err != nil {
-		log.Fatalf("could not load file %s: %v\n", in, err)
-	}
-
-	fmt.Println("Using file:", in, "as input")
-
-	return data
-}
-
-func dGetKey(in string) *protocol.Key {
-	if in == "" {
-		log.Fatal("flag key is required")
-	}
-
-	fileBytes, err := ioutil.ReadFile(in)
-	if err != nil {
-		log.Fatalf("could not read %s: %v", in, err)
-	}
-
-	data, err := xor.LoadKey(fileBytes)
-	if err != nil {
-		log.Fatalf("could not load file %s: %v", in, err)
-	}
-
-	fmt.Println("Using file:", in, "as key")
-
-	return data
 }
 
 func init() {

@@ -16,8 +16,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"runtime"
 
+	"github.com/penguingovernor/goxor/internal/constants"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +32,19 @@ var rootCmd = &cobra.Command{
 	Short: "goxor is a cli encryption and decryption tool",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		version, err := cmd.Flags().GetBool("version")
+		if err != nil {
+			log.Fatalf("internal error: could not get flag %q: %v\n", "version", err)
+		}
+		if version {
+			fmt.Printf("Goxor version %s %s/%s\n", constants.Version, runtime.GOOS, runtime.GOARCH)
+		}
+	},
+}
+
+func init() {
+	rootCmd.Flags().BoolP("version", "v", false, "Print version infromation and quit")
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

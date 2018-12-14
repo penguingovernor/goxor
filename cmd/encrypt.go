@@ -15,17 +15,9 @@
 package cmd
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
-	"math/rand"
-	"os"
-	"strings"
-	"time"
 
-	"github.com/penguingovernor/goxor/protocol"
-
-	"github.com/penguingovernor/goxor/xor"
+	"github.com/penguingovernor/goxor/internal/cmdutil"
 
 	"github.com/spf13/cobra"
 )
@@ -67,7 +59,9 @@ goxor encrypt -i hello -k test -s sig`,
 			log.Println(err)
 		}
 		// Encrypt the files
-		encrypt(inFlag, keyFlag, sigFlag, outputFlag, keyOutFlag)
+		if err := cmdutil.Encrypt(inFlag, keyFlag, sigFlag, outputFlag, keyOutFlag); err != nil {
+			log.Fatalf("encryption error: %v\n", err)
+		}
 	},
 }
 
@@ -111,184 +105,5 @@ if the input is "stdin", then stdin will be used as the signautre`
 	encryptCmd.Flags().StringP("output", "o", "", outMsg)
 	encryptCmd.Flags().StringP("key_out", "K", "", outMsg)
 	encryptCmd.Flags().StringP("signature", "s", "", sigMsg)
-
-}
-
-func encrypt(inputFlag, keyFlag, signatureFlag, outputFlag, outputKeyFlag string) {
-
-	// Get the bytes from user input
-	inputBytes := getInput(inputFlag)
-	keyBytes := getKey(keyFlag, len(inputBytes))
-	signatureBytes := getSignature(signatureFlag)
-
-	// Generate the appropriate data
-	data := xor.GenerateData(inputBytes, signatureBytes)
-	key := xor.GenerateKey(keyBytes, signatureBytes)
-
-	// Encrypt the data
-	eData, err := xor.Encrypt(data, key)
-	if err != nil {
-		log.Fatalf("error while encryptng file: %v", err)
-	}
-
-	// Say we're done and output the files
-	fmt.Println("Done encrypting file")
-	writeData(eData, outputFlag)
-	writeKey(key, outputKeyFlag)
-
-}
-
-func writeData(data *protocol.Data, dest string) {
-	outname := dest
-
-	if strings.ToLower(dest) == "stdout" {
-		fmt.Println("---BEGIN ENCRYPTED DATA---")
-		xor.WriteData(os.Stdout, data)
-		fmt.Println("---END ENCRYPTED DATA---")
-		return
-	}
-
-	if dest == "" {
-		outname = "out"
-	}
-
-	file, err := os.Create(outname + ".xor")
-	if err != nil {
-		log.Fatalf("Could not create file %s: %v\n", outname+".xor", err)
-	}
-
-	if err := xor.WriteData(file, data); err != nil {
-		log.Fatalf("could not write key %s: %v\n", outname+".xor", err)
-	}
-
-	if err := file.Close(); err != nil {
-		log.Fatalf("could not close file %s: %v\n", outname+".xor.key", err)
-	}
-
-	fmt.Println("Data written to:", outname+".xor")
-}
-
-func writeKey(data *protocol.Key, dest string) {
-	outname := dest
-
-	if strings.ToLower(dest) == "stdout" {
-		fmt.Println("---BEGIN KEY DATA---")
-		xor.WriteKey(os.Stdout, data)
-		fmt.Println("---END KEY DATA---")
-		return
-	}
-
-	if dest == "" {
-		outname = "out"
-	}
-
-	file, err := os.Create(outname + ".xor.key")
-	if err != nil {
-		log.Fatalf("Could not create file %s: %v\n", outname+".xor.key", err)
-	}
-
-	if err := xor.WriteKey(file, data); err != nil {
-		log.Fatalf("could not write key %s: %v\n", outname+".xor.key", err)
-	}
-
-	if err := file.Close(); err != nil {
-		log.Fatalf("could not close file %s: %v\n", outname+".xor.key", err)
-	}
-
-	fmt.Println("Key written to:", outname+".xor.key")
-
-}
-
-func getInput(input string) []byte {
-	// If omitted
-	if input == "" {
-		fmt.Println("Reading from stdin for input, press ctrl-d to stop")
-		stdinBytes, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			log.Fatalf("Could not read from stdin: %v", err)
-		}
-		return stdinBytes
-	}
-	// Try to open the file
-	fileBytes, err := ioutil.ReadFile(input)
-	// If we couldn't open the file, treat input as string
-	if err != nil {
-		fmt.Printf("Using string: \"%s\" as input\n", input)
-		return []byte(input)
-	}
-	// If we could open the file, return the bytes
-	fmt.Println("Using file:", input, "as input")
-	return fileBytes
-}
-
-func getKey(input string, length int) []byte {
-
-	// If omitted, use otp
-	if input == "" {
-		fmt.Println("Using one time pad as key")
-		// Seed random
-		rand.Seed(time.Now().Unix())
-		// Make the pad
-		key := make([]byte, length)
-		_, err := rand.Read(key)
-		if err != nil {
-			log.Fatalf("Could not generate one time pad: %v", err)
-		}
-		return key
-	}
-
-	// If stdin
-	if strings.ToLower(input) == "stdin" {
-		fmt.Println("Reading from stdin for key, press ctrl-d to stop")
-		key, err := ioutil.ReadAll(os.Stdin)
-		fmt.Println("")
-		if err != nil {
-			log.Fatalf("Could not read from stdin: %v", err)
-		}
-		return key
-	}
-
-	// Try to open the file
-	fileBytes, err := ioutil.ReadFile(input)
-	// If we couldn't open the file, treat input as string
-	if err != nil {
-		fmt.Printf("Using string: \"%s\" as key\n", input)
-		return []byte(input)
-	}
-
-	// If we could open the file, return the bytes
-	fmt.Println("Using file:", input, "as key")
-	return fileBytes
-}
-
-func getSignature(input string) []byte {
-	// If omitted, use goxor
-	if input == "" {
-		fmt.Println("Using \"goxor\" as signature")
-		return []byte("goxor")
-	}
-
-	// If stdin
-	if strings.ToLower(input) == "stdin" {
-		fmt.Println("Reading from stdin for signature, press ctrl-d to stop")
-		key, err := ioutil.ReadAll(os.Stdin)
-		fmt.Println("")
-		if err != nil {
-			log.Fatalf("Could not read from stdin: %v", err)
-		}
-		return key
-	}
-
-	// Try to open the file
-	fileBytes, err := ioutil.ReadFile(input)
-	// If we couldn't open the file, treat input as string
-	if err != nil {
-		fmt.Printf("Using string: \"%s\" as signature\n", input)
-		return []byte(input)
-	}
-
-	// If we could open the file, return the bytes
-	fmt.Println("Using file:", input, "as signature")
-	return fileBytes
 
 }

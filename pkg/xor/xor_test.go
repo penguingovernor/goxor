@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/penguingovernor/goxor/protocol"
+	"github.com/penguingovernor/goxor/api/protocol"
 )
 
 func TestGenerateKey(t *testing.T) {

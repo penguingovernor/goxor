@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	"github.com/penguingovernor/goxor/protocol"
+	"github.com/penguingovernor/goxor/api/protocol"
 )
 
 // LoadKey loads the key from the given byte slice
