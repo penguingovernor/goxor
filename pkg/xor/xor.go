@@ -1,4 +1,5 @@
-// Package xor does
+// Package xor is a library
+// that handles encryptions and decryptions
 package xor
 
 import (
